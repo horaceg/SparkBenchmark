@@ -1,23 +1,29 @@
+import numpy as np
 import vaex
-import dask.dataframe as dd
 
-dfs = [
-    dd.read_csv(
-        "data/{}.csv".format(country),
-        dtype={
-            "DISTRICT": "object",
-            "POSTCODE": "object",
-            "CITY": "object",
-            "NUMBER": "object",
-        },
-    ).assign(country=country)
-    for country in ["france", "germany", "italy", "spain", "portugal"]
-]
+# dfs = []
+# for country in ["france", "germany", "italy", "spain", "portugal"]:
+#     df = vaex.open(
+#         "data/{}.csv.hdf5".format(country),
+#         #  convert=True,
+#         #  dtype={
+#         #      "DISTRICT": "object",
+#         #      "POSTCODE": "object",
+#         #      "CITY": "object",
+#         #      "NUMBER": "object",
+#         #  },
+#     )
+#     df["country"] = np.repeat([country], df.shape[0])
+#     df.export(f"data/{country}.hdf5")
+#     # dfs.append(df)
 
-full = dd.concat([f[["LON", "LAT", "STREET", "CITY", "country"]] for f in dfs])
+# full = vaex.concat([f[["LON", "LAT", "STREET", "CITY", "country"]] for f in dfs])
+
+full = vaex.open("data/*.hdf5")[["LON", "LAT", "country"]]
 
 print(full.columns)
-full.sample(frac=1.0).to_csv("data/shuffled_with_txt.csv")
+print(full.shape[0])
+# full.sample(frac=1.).export("data/shuffled_with_txt.csv")
 
-df = dd.concat([f[["LON", "LAT", "country"]] for f in dfs])
-df.sample(frac=1.0).to_csv("data/large_five.csv")
+# df = vaex.concat([f[["LON", "LAT", "country"]] for f in dfs])
+full.sample(frac=1.0).export("data/large_five.csv")
